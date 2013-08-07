@@ -10,7 +10,7 @@ npm install child-process-promise --save
 
 # Usage
 ```javascript
-var exec = require('child-process-exec').exec;
+var exec = require('child-process-promise').exec;
 
 exec('echo hello')
     .then(function(result) {
