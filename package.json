@@ -1,0 +1,29 @@
+{
+  "name": "child-process-promise",
+  "version": "0.1.0",
+  "description": "Simple wrapper around the \"child_process\" module that makes use of promises",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patrick-steele-idem/child-process-promise.git"
+  },
+  "keywords": [
+    "child",
+    "process",
+    "promises"
+  ],
+  "author": "Patrick Steele-Idem <pnidem@gmail.com>",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/patrick-steele-idem/child-process-promise/issues"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "q": "~0.9.6"
+  }
+}
