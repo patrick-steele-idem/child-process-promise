@@ -1,6 +1,6 @@
 {
   "name": "child-process-promise",
-  "version": "0.1.2",
+  "version": "0.2.0-SNAPSHOT",
   "description": "Simple wrapper around the \"child_process\" module that makes use of promises",
   "main": "lib/index.js",
   "scripts": {
