@@ -25,5 +25,8 @@
   },
   "dependencies": {
     "q": "~0.9.6"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/"
   }
 }
