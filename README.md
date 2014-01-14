@@ -9,6 +9,8 @@ npm install child-process-promise --save
 ```
 
 # Usage
+
+## exec
 ```javascript
 var exec = require('child-process-promise').exec;
 
@@ -24,5 +26,27 @@ exec('echo hello')
     })
     .progress(function(childProcess) {
         console.log('childProcess.pid: ', childProcess.pid);
+    });
+```
+
+## spawn
+```javascript
+var spawn = require('../').spawn;
+
+spawn('echo', ['hello'])
+    .progress(function(childProcess) {
+        console.log('[spawn] childProcess.pid: ', childProcess.pid);
+        childProcess.stdout.on('data', function(data) {
+            console.log('[spawn] stdout: ', data.toString());
+        });
+        childProcess.stderr.on('data', function(data) {
+            console.log('[spawn] stderr: ', data.toString()); 
+        });
+    })
+    .then(function(result) {
+        console.log('[spawn] done!');
+    })
+    .fail(function(err) {
+        console.error("[spawn] ERROR: ", err);
     });
 ```
