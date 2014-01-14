@@ -31,7 +31,7 @@ exec('echo hello')
 
 ## spawn
 ```javascript
-var spawn = require('../').spawn;
+var spawn = require('child-process-promise').spawn;
 
 spawn('echo', ['hello'])
     .progress(function(childProcess) {
