@@ -1,8 +1,7 @@
 var assert = require('assert');
-var exec = require('../').exec;
-var spawn = require('../').spawn;
+var cp = require('../');
 
-exec('echo hello')
+cp.exec('echo hello')
     .then(function (result) {
         var stdout = result.stdout;
         var stderr = result.stderr;
@@ -17,9 +16,24 @@ exec('echo hello')
         console.log('[exec] childProcess.pid: ', childProcess.pid);
     });
 
+cp.execFile('echo', ['hello'])
+    .then(function (result) {
+        var stdout = result.stdout;
+        var stderr = result.stderr;
+
+        assert.equal(stdout.toString(), 'hello\n');
+        assert.equal(stderr.toString(), '');
+    })
+    .fail(function (err) {
+        console.error("ERROR: ", (err.stack || err));
+    })
+    .progress(function (childProcess) {
+        console.log('[execFile] childProcess.pid: ', childProcess.pid);
+    });
+
 var spawnErr = '';
 
-spawn('echo', ['hello'])
+cp.spawn('echo', ['hello'])
     .progress(function (childProcess) {
         console.log('[spawn] childProcess.pid: ', childProcess.pid);
         childProcess.stderr.on('data', function (data) {
