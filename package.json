@@ -24,6 +24,6 @@
     "registry": "http://registry.npmjs.org/"
   },
   "dependencies": {
-    "q": "~0.9.6"
+    "q": "^1.1.2"
   }
 }
