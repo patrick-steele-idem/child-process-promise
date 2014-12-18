@@ -30,7 +30,6 @@
     "registry": "http://registry.npmjs.org/"
   },
   "dependencies": {
-    "lodash": "^2.4.1",
     "q": "^1.1.2"
   },
   "devDependencies": {
