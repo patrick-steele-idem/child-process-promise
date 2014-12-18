@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Simple wrapper around the \"child_process\" module that makes use of promises",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "Readme.md"
+  ],
   "scripts": {
     "lint": "eslint lib/*js test/*js",
     "pretest": "npm run lint",
