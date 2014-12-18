@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "description": "Simple wrapper around the \"child_process\" module that makes use of promises",
   "main": "lib/index.js",
+  "files": [
+    "lib",
+    "Readme.md"
+  ],
   "scripts": {
+    "lint": "eslint lib/*js test/*js",
+    "pretest": "npm run lint",
     "test": "node test/test.js"
   },
   "repository": {
@@ -24,6 +30,10 @@
     "registry": "http://registry.npmjs.org/"
   },
   "dependencies": {
-    "q": "~0.9.6"
+    "lodash": "^2.4.1",
+    "q": "^1.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^0.10.2"
   }
 }
