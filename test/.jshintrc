@@ -1,6 +1,21 @@
 {
+    "predef": [
+        "it",
+        "xit",
+        "console",
+        "describe",
+        "xdescribe",
+        "beforeEach",
+        "before",
+        "after",
+        "waits",
+        "waitsFor",
+        "runs"
+    ],
     "node" : true,
+    "es5" : false,
     "esnext": true,
+    "browser" : true,
     "boss" : false,
     "curly": false,
     "debug": false,
@@ -22,8 +37,7 @@
     "sub": false,
     "white": false,
     "eqeqeq": false,
-    "latedef": "func",
+    "latedef": true,
     "unused": "vars",
-    "strict": false,
     "eqnull": true
 }

@@ -21,11 +21,8 @@ exec('echo hello')
         console.log('stdout: ', stdout);
         console.log('stderr: ', stderr);
     })
-    .fail(function (err) {
+    .catch(function (err) {
         console.error('ERROR: ', err);
-    })
-    .progress(function (childProcess) {
-        console.log('childProcess.pid: ', childProcess.pid);
     });
 ```
 
@@ -33,20 +30,22 @@ exec('echo hello')
 ```javascript
 var spawn = require('child-process-promise').spawn;
 
-spawn('echo', ['hello'])
-    .progress(function (childProcess) {
-        console.log('[spawn] childProcess.pid: ', childProcess.pid);
-        childProcess.stdout.on('data', function (data) {
-            console.log('[spawn] stdout: ', data.toString());
-        });
-        childProcess.stderr.on('data', function (data) {
-            console.log('[spawn] stderr: ', data.toString());
-        });
-    })
-    .then(function () {
+var promise = spawn('echo', ['hello']);
+
+var childProcess = promise.childProcess;
+
+console.log('[spawn] childProcess.pid: ', childProcess.pid);
+childProcess.stdout.on('data', function (data) {
+    console.log('[spawn] stdout: ', data.toString());
+});
+childProcess.stderr.on('data', function (data) {
+    console.log('[spawn] stderr: ', data.toString());
+});
+
+promise.then(function () {
         console.log('[spawn] done!');
     })
-    .fail(function (err) {
+    .catch(function (err) {
         console.error('[spawn] ERROR: ', err);
     });
 ```
@@ -65,7 +64,7 @@ spawn('echo', ['hello'], { capture: [ 'stdout', 'stderr' ]})
     .then(function (result) {
         console.log('[spawn] stdout: ', result.stdout.toString());
     })
-    .fail(function (err) {
+    .catch(function (err) {
         console.error('[spawn] stderr: ', err.stderr);
     });
 ```
