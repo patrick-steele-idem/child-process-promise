@@ -312,6 +312,17 @@ describe('child-process-promise', function() {
                 })
                 .done();
         });
+
+        it('should not reject when writing to stderr', (done) => {
+            var scriptPath = path.join(__dirname, 'fixtures/stderr.js');
+            var promise = childProcessPromise.spawn('node', [scriptPath]);
+
+            promise
+                .then((result) => {
+                    done();
+                })
+                .catch(done);
+        });
     });
 
 
