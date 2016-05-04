@@ -19,7 +19,7 @@ Changelog
 
 #### Breaking changes
 
-- This library bow requires Node.js 4.0+
+- This library now requires Node.js 4.0+
     - If you are using Node.js <4 you should use `child-process-promise@^1.0.0`
 
 # 1.x
