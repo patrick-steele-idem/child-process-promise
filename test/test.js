@@ -323,6 +323,16 @@ describe('child-process-promise', function() {
                 })
                 .catch(done);
         });
+
+        it('should provide the exit code for success', (done) => {
+            var fooPath = path.join(__dirname, 'fixtures/foo.txt');
+            var promise = childProcessPromise.spawn('cat', [fooPath]);
+            promise.then((result) => {
+                    expect(result.code).to.equal(0);
+                })
+                .catch(done);
+            done();
+        });
     });
 
 
