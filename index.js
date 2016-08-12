@@ -3,6 +3,6 @@
 if (require('node-version').major >= 4) {
     module.exports = require('./lib');
 } else {
-    global.Promise = require('promise-polyfill');
+    global.Promise = global.Promise || require('promise-polyfill');
     module.exports = require('./lib-es5');
 }
