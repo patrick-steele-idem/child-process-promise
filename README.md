@@ -1,6 +1,10 @@
 child-process-promise
 =====================
 
+[![Build Status](https://travis-ci.org/patrick-steele-idem/child-process-promise.svg?branch=master)](https://travis-ci.org/patrick-steele-idem/child-process-promise)
+[![NPM](https://img.shields.io/npm/v/child-process-promise.svg)](https://www.npmjs.com/package/child-process-promise)
+[![Downloads](https://img.shields.io/npm/dm/child-process-promise.svg)](http://npm-stat.com/charts.html?package=child-process-promise)
+
 Simple wrapper around the `child_process` module that makes use of promises
 
 # Installation
