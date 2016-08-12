@@ -12,6 +12,9 @@
         "waitsFor",
         "runs"
     ],
+    "globals": {
+        "Promise"   : true
+    },
     "node" : true,
     "es5" : false,
     "esnext": true,

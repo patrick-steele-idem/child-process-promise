@@ -15,6 +15,15 @@ if (require('node-version').major >= 4) {
     ChildProcessPromise = require('../lib-es5/ChildProcessPromise');
 }
 
+var Promise;
+
+if (require('node-version').major >= 4) {
+    Promise = global.Promise;
+} else {
+    // Don't use the native Promise in Node.js <4 since it doesn't support subclassing
+    Promise = require('promise-polyfill');
+}
+
 var NODE_VERSION = process.version;
 var NODE_PATH = process.argv[0];
 
