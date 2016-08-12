@@ -6,35 +6,43 @@ var assert = require('chai').assert;
 var path = require('path');
 
 var childProcessPromise = require('../');
-var ChildProcessPromise = require('../lib/ChildProcessPromise');
-const NODE_VERSION = process.version;
-const NODE_PATH = process.argv[0];
+
+var ChildProcessPromise;
+
+if (require('node-version').major >= 4) {
+    ChildProcessPromise = require('../lib/ChildProcessPromise');
+} else {
+    ChildProcessPromise = require('../lib-es5/ChildProcessPromise');
+}
+
+var NODE_VERSION = process.version;
+var NODE_PATH = process.argv[0];
 
 describe('child-process-promise', function() {
     describe('exec', function() {
-        it('should return a promise', (done) => {
+        it('should return a promise', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
-            var promise = childProcessPromise.exec(`cat ${fooPath}`);
+            var promise = childProcessPromise.exec('cat ' + fooPath);
             expect(promise.then).to.be.a('function');
             expect(promise).to.be.an.instanceof(ChildProcessPromise);
             expect(promise).to.be.an.instanceof(Promise);
             done();
         });
 
-        it('should expose the `childProcess` object on the returned promise', (done) => {
+        it('should expose the `childProcess` object on the returned promise', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
-            var promise = childProcessPromise.exec(`cat ${fooPath}`);
+            var promise = childProcessPromise.exec('cat ' + fooPath);
             expect(promise.childProcess.pid).to.be.a('number');
             done();
         });
 
-        it('should resolve with process info', (done) => {
+        it('should resolve with process info', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
-            var promise = childProcessPromise.exec(`cat ${fooPath}`);
+            var promise = childProcessPromise.exec('cat ' + fooPath);
             var childProcess = promise.childProcess;
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     expect(result.stdout).to.equal('foo');
                     expect(result.stderr).to.equal('');
                     expect(result.childProcess).to.be.an('object');
@@ -44,37 +52,37 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should handle rejection correctly with catch', (done) => {
+        it('should handle rejection correctly with catch', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
-            var promise = childProcessPromise.exec(`cat ${missingFilePath}`);
+            var promise = childProcessPromise.exec('cat ' + missingFilePath);
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
-                .catch((e) => {
+                .catch(function(e) {
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
                 .catch(done);
         });
 
-        it('should handle rejection correctly with fail', (done) => {
+        it('should handle rejection correctly with fail', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
-            var promise = childProcessPromise.exec(`cat ${missingFilePath}`);
+            var promise = childProcessPromise.exec('cat ' + missingFilePath);
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
-                .fail((e) => {
+                .fail(function(e) {
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
                 .catch(done);
         });
 
-        it('should be compatible with previous version of child-process-promise', (done) => {
+        it('should be compatible with previous version of child-process-promise', function(done) {
             var childProcessPid;
 
             childProcessPromise.exec('echo hello')
@@ -98,7 +106,7 @@ describe('child-process-promise', function() {
     });
 
     describe('execFile', function() {
-        it('should return a promise', (done) => {
+        it('should return a promise', function(done) {
             var promise = childProcessPromise.execFile(NODE_PATH, ['--version']);
             expect(promise.then).to.be.a('function');
             expect(promise).to.be.an.instanceof(ChildProcessPromise);
@@ -106,18 +114,18 @@ describe('child-process-promise', function() {
             done();
         });
 
-        it('should expose the `childProcess` object on the returned promise', (done) => {
+        it('should expose the `childProcess` object on the returned promise', function(done) {
             var promise = childProcessPromise.execFile(NODE_PATH, ['--version']);
             expect(promise.childProcess.pid).to.be.a('number');
             done();
         });
 
-        it('should resolve with process info', (done) => {
+        it('should resolve with process info', function(done) {
             var promise = childProcessPromise.execFile(NODE_PATH, ['--version']);
             var childProcess = promise.childProcess;
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     expect(result.stdout).to.contain(NODE_VERSION);
                     expect(result.stderr).to.equal('');
                     expect(result.childProcess).to.be.an('object');
@@ -127,37 +135,37 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should handle rejection correctly with catch', (done) => {
+        it('should handle rejection correctly with catch', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
             var promise = childProcessPromise.execFile(missingFilePath, ['foo']);
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
-                .catch((e) => {
+                .catch(function(e) {
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
                 .catch(done);
         });
 
-        it('should handle rejection correctly with fail', (done) => {
+        it('should handle rejection correctly with fail', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
             var promise = childProcessPromise.execFile(missingFilePath, ['foo']);
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
-                .fail((e) => {
+                .fail(function(e) {
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
                 .catch(done);
         });
 
-        it('should be compatible with previous version of child-process-promise', (done) => {
+        it('should be compatible with previous version of child-process-promise', function(done) {
             var childProcessPid;
 
             childProcessPromise.execFile(NODE_PATH, ['--version'])
@@ -178,7 +186,7 @@ describe('child-process-promise', function() {
     });
 
     describe('spawn', function() {
-        it('should return a promise', (done) => {
+        it('should return a promise', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
             var promise = childProcessPromise.spawn('cat', [fooPath]);
             expect(promise.then).to.be.a('function');
@@ -187,14 +195,14 @@ describe('child-process-promise', function() {
             done();
         });
 
-        it('should expose the `childProcess` object on the returned promise', (done) => {
+        it('should expose the `childProcess` object on the returned promise', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
             var promise = childProcessPromise.spawn('cat', [fooPath]);
             expect(promise.childProcess.pid).to.be.a('number');
             done();
         });
 
-        it('should resolve with process info', (done) => {
+        it('should resolve with process info', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
             var promise = childProcessPromise.spawn('cat', [fooPath]);
             var childProcess = promise.childProcess;
@@ -205,20 +213,20 @@ describe('child-process-promise', function() {
             });
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     expect(result.childProcess).to.be.an('object');
                     expect(result.childProcess).to.equal(childProcess);
                 })
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout only) option for spawn', (done) => {
+        it('should support the "capture" (stdout only) option for spawn', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
             var promise = childProcessPromise.spawn('cat', [fooPath], { capture: ['stdout'] });
             var childProcess = promise.childProcess;
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     expect(result.stdout).to.equal('foo');
                     expect(result.stderr).to.equal(undefined);
                     expect(result.childProcess).to.be.an('object');
@@ -228,13 +236,13 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout and stderr) option for spawn', (done) => {
+        it('should support the "capture" (stdout and stderr) option for spawn', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
             var promise = childProcessPromise.spawn('cat', [fooPath], { capture: ['stdout', 'stderr'] });
             var childProcess = promise.childProcess;
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     expect(result.stdout).to.equal('foo');
                     expect(result.stderr).to.equal('');
                     expect(result.childProcess).to.be.an('object');
@@ -244,16 +252,16 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout and stderr) option for spawn with rejection', (done) => {
+        it('should support the "capture" (stdout and stderr) option for spawn with rejection', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
             var promise = childProcessPromise.spawn('cat', [missingFilePath], { capture: ['stdout', 'stderr'] });
             var childProcess = promise.childProcess;
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection expected!'));
                 })
-                .catch((result) => {
+                .catch(function(result) {
                     expect(result.stdout).to.equal('');
                     expect(result.stderr).to.contain(missingFilePath);
                     expect(result.childProcess).to.be.an('object');
@@ -263,37 +271,37 @@ describe('child-process-promise', function() {
                 .done();
         });
 
-        it('should handle rejection correctly with catch', (done) => {
+        it('should handle rejection correctly with catch', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
             var promise = childProcessPromise.spawn('cat', [missingFilePath]);
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
-                .catch((e) => {
+                .catch(function(e) {
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
                 .catch(done);
         });
 
-        it('should handle rejection correctly with fail', (done) => {
+        it('should handle rejection correctly with fail', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
             var promise = childProcessPromise.spawn('cat', [missingFilePath]);
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
-                .fail((e) => {
+                .fail(function(e) {
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
                 .catch(done);
         });
 
-        it('should be compatible with previous version of child-process-promise', (done) => {
+        it('should be compatible with previous version of child-process-promise', function(done) {
             var spawnOut = '';
             var spawnErr = '';
             childProcessPromise.spawn('echo', ['hello'])
@@ -313,21 +321,21 @@ describe('child-process-promise', function() {
                 .done();
         });
 
-        it('should not reject when writing to stderr', (done) => {
+        it('should not reject when writing to stderr', function(done) {
             var scriptPath = path.join(__dirname, 'fixtures/stderr.js');
             var promise = childProcessPromise.spawn('node', [scriptPath]);
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done();
                 })
                 .catch(done);
         });
 
-        it('should provide the exit code for success', (done) => {
+        it('should provide the exit code for success', function(done) {
             var fooPath = path.join(__dirname, 'fixtures/foo.txt');
             var promise = childProcessPromise.spawn('cat', [fooPath]);
-            promise.then((result) => {
+            promise.then(function(result) {
                     expect(result.code).to.equal(0);
                 })
                 .catch(done);
@@ -337,7 +345,7 @@ describe('child-process-promise', function() {
 
 
     describe('fork', function() {
-        it('should return a promise', (done) => {
+        it('should return a promise', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo']);
             expect(promise.then).to.be.a('function');
@@ -346,14 +354,14 @@ describe('child-process-promise', function() {
             done();
         });
 
-        it('should expose the `childProcess` object on the returned promise', (done) => {
+        it('should expose the `childProcess` object on the returned promise', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo']);
             expect(promise.childProcess.pid).to.be.a('number');
             done();
         });
 
-        it('should resolve with process info', (done) => {
+        it('should resolve with process info', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo']);
             var childProcess = promise.childProcess;
@@ -364,14 +372,14 @@ describe('child-process-promise', function() {
             });
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     expect(result.childProcess).to.be.an('object');
                     expect(result.childProcess).to.equal(childProcess);
                 })
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout only) option for spawn', (done) => {
+        it('should support the "capture" (stdout only) option for spawn', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo'], {
                 silent: true,
@@ -381,7 +389,7 @@ describe('child-process-promise', function() {
             var childProcess = promise.childProcess;
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     expect(result.stdout).to.equal('foo');
                     expect(result.stderr).to.equal(undefined);
                     expect(result.childProcess).to.be.an('object');
@@ -391,7 +399,7 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout and stderr) option for spawn', (done) => {
+        it('should support the "capture" (stdout and stderr) option for spawn', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo'], {
                 silent: true,
@@ -401,7 +409,7 @@ describe('child-process-promise', function() {
             var childProcess = promise.childProcess;
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     expect(result.stdout).to.equal('foo');
                     expect(result.stderr).to.equal('');
                     expect(result.childProcess).to.be.an('object');
@@ -411,7 +419,7 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout and stderr) option for spawn with rejection', (done) => {
+        it('should support the "capture" (stdout and stderr) option for spawn with rejection', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['ERROR'], {
                 silent: true,
@@ -421,10 +429,10 @@ describe('child-process-promise', function() {
             var childProcess = promise.childProcess;
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection expected!'));
                 })
-                .catch((result) => {
+                .catch(function(result) {
                     expect(result.stdout).to.equal('');
                     expect(result.stderr).to.equal('ERROR');
                     expect(result.childProcess).to.be.an('object');
@@ -434,37 +442,37 @@ describe('child-process-promise', function() {
                 .done();
         });
 
-        it('should handle rejection correctly with catch', (done) => {
+        it('should handle rejection correctly with catch', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
             var promise = childProcessPromise.fork(missingFilePath, [], { silent: true });
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
-                .catch((e) => {
+                .catch(function(e) {
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
                 .catch(done);
         });
 
-        it('should handle rejection correctly with fail', (done) => {
+        it('should handle rejection correctly with fail', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
             var promise = childProcessPromise.fork(missingFilePath, [], { silent: true });
 
             promise
-                .then((result) => {
+                .then(function(result) {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
-                .fail((e) => {
+                .fail(function(e) {
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
                 .catch(done);
         });
 
-        it('should receive message from child', (done) => {
+        it('should receive message from child', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo']);
 
@@ -484,7 +492,7 @@ describe('child-process-promise', function() {
                 .done();
         });
 
-        it('should receive message from child when using "progress"', (done) => {
+        it('should receive message from child when using "progress"', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo']);
 
