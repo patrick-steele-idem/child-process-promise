@@ -9,8 +9,8 @@
   "scripts": {
     "lint": "eslint lib/*js test/*js",
     "test": "npm run mocha",
-    "mocha": "node_modules/.bin/mocha --ui bdd --reporter spec ./test/",
-    "prepublish": "node_modules/.bin/babel lib --out-dir lib-es5"
+    "mocha": "mocha --ui bdd --reporter spec ./test/",
+    "prepublish": "babel lib --out-dir lib-es5"
   },
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
     "promise-polyfill": "^6.0.1"
   },
   "devDependencies": {
-    "babel": "^6.5.2",
+    "babel-cli": "^6.11.4",
     "babel-plugin-check-es2015-constants": "^6.8.0",
     "babel-plugin-transform-es2015-block-scoping": "^6.10.1",
     "babel-preset-es2015": "^6.13.2",
@@ -45,7 +45,12 @@
   },
   "version": "2.0.3",
   "babel": {
-    "presets": ["es2015"],
-    "plugins": ["check-es2015-constants", "transform-es2015-block-scoping"]
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "check-es2015-constants",
+      "transform-es2015-block-scoping"
+    ]
   }
 }
