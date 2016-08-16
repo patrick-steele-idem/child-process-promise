@@ -4,6 +4,7 @@
   "main": "./index.js",
   "files": [
     "lib",
+    "lib-es5",
     "Readme.md"
   ],
   "scripts": {
