@@ -44,7 +44,7 @@
     "jshint": "^2.9.1",
     "mocha": "^2.4.5"
   },
-  "version": "2.1.1",
+  "version": "2.1.2",
   "babel": {
     "presets": [
       "es2015"
