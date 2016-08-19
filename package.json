@@ -23,7 +23,7 @@
     "promises"
   ],
   "author": "Patrick Steele-Idem <pnidem@gmail.com>",
-  "license": "BSD",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/patrick-steele-idem/child-process-promise/issues"
   },
