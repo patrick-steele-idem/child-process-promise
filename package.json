@@ -31,6 +31,7 @@
     "registry": "http://registry.npmjs.org/"
   },
   "dependencies": {
+    "cross-spawn": "^4.0.2",
     "node-version": "^1.0.0",
     "promise-polyfill": "^6.0.1"
   },
