@@ -8,11 +8,14 @@ var path = require('path');
 var childProcessPromise = require('../');
 
 var ChildProcessPromise;
+var ChildProcessError;
 
 if (require('node-version').major >= 4) {
     ChildProcessPromise = require('../lib/ChildProcessPromise');
+    ChildProcessError = require('../lib/ChildProcessError');
 } else {
     ChildProcessPromise = require('../lib-es5/ChildProcessPromise');
+    ChildProcessError = require('../lib-es5/ChildProcessError');
 }
 
 var Promise;
@@ -95,7 +98,7 @@ describe('child-process-promise', function() {
             var childProcessPid;
 
             childProcessPromise.exec('echo hello')
-                .then(function (result) {
+                .then(function(result) {
                     var stdout = result.stdout;
                     var stderr = result.stderr;
 
@@ -104,10 +107,10 @@ describe('child-process-promise', function() {
                     expect(childProcessPid).to.be.a('number');
                     done();
                 })
-                .fail(function (err) {
+                .fail(function(err) {
                     console.error('ERROR: ', (err.stack || err));
                 })
-                .progress(function (childProcess) {
+                .progress(function(childProcess) {
                     childProcessPid = childProcess.pid;
                 })
                 .done();
@@ -168,7 +171,9 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .fail(function(e) {
+                    expect(e).to.be.an.instanceof(ChildProcessError);
                     expect(e.toString()).to.contain(missingFilePath);
+                    expect(e.code).to.equal('ENOENT');
                     done();
                 })
                 .catch(done);
@@ -178,7 +183,7 @@ describe('child-process-promise', function() {
             var childProcessPid;
 
             childProcessPromise.execFile(NODE_PATH, ['--version'])
-                .then(function (result) {
+                .then(function(result) {
                     var stdout = result.stdout;
                     var stderr = result.stderr;
 
@@ -187,7 +192,7 @@ describe('child-process-promise', function() {
                     expect(childProcessPid).to.be.a('number');
                     done();
                 })
-                .progress(function (childProcess) {
+                .progress(function(childProcess) {
                     childProcessPid = childProcess.pid;
                 })
                 .done();
@@ -270,11 +275,12 @@ describe('child-process-promise', function() {
                 .then(function(result) {
                     done(new Error('rejection expected!'));
                 })
-                .catch(function(result) {
-                    expect(result.stdout).to.equal('');
-                    expect(result.stderr).to.contain(missingFilePath);
-                    expect(result.childProcess).to.be.an('object');
-                    expect(result.childProcess).to.equal(childProcess);
+                .catch(function(error) {
+                    expect(error).to.be.an.instanceof(ChildProcessError);
+                    expect(error.stdout).to.equal('');
+                    expect(error.stderr).to.contain(missingFilePath);
+                    expect(error.childProcess).to.be.an('object');
+                    expect(error.childProcess).to.equal(childProcess);
                     done();
                 })
                 .done();
@@ -289,6 +295,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .catch(function(e) {
+                    expect(e).to.be.an.instanceof(ChildProcessError);
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
@@ -304,6 +311,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .fail(function(e) {
+                    expect(e).to.be.an.instanceof(ChildProcessError);
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
@@ -315,14 +323,14 @@ describe('child-process-promise', function() {
             var spawnErr = '';
             childProcessPromise.spawn('echo', ['hello'])
                 .progress(function(childProcess) {
-                    childProcess.stdout.on('data', function (data) {
+                    childProcess.stdout.on('data', function(data) {
                         spawnOut += data;
                     });
-                    childProcess.stderr.on('data', function (data) {
+                    childProcess.stderr.on('data', function(data) {
                         spawnErr += data;
                     });
                 })
-                .then(function () {
+                .then(function() {
                     assert.equal(spawnOut.toString(), 'hello\n');
                     assert.equal(spawnErr.toString(), '');
                     done();
@@ -441,11 +449,12 @@ describe('child-process-promise', function() {
                 .then(function(result) {
                     done(new Error('rejection expected!'));
                 })
-                .catch(function(result) {
-                    expect(result.stdout).to.equal('');
-                    expect(result.stderr).to.equal('ERROR');
-                    expect(result.childProcess).to.be.an('object');
-                    expect(result.childProcess).to.equal(childProcess);
+                .catch(function(error) {
+                    expect(error).to.be.an.instanceof(ChildProcessError);
+                    expect(error.stdout).to.equal('');
+                    expect(error.stderr).to.equal('ERROR');
+                    expect(error.childProcess).to.be.an('object');
+                    expect(error.childProcess).to.equal(childProcess);
                     done();
                 })
                 .done();
@@ -460,6 +469,8 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .catch(function(e) {
+                    expect(e).to.be.an.instanceof(ChildProcessError);
+                    expect(e.code).to.equal(1);
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
@@ -475,6 +486,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .fail(function(e) {
+                    expect(e).to.be.an.instanceof(ChildProcessError);
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
@@ -487,14 +499,14 @@ describe('child-process-promise', function() {
 
             var forkSuccessfulReceived = false;
 
-            promise.childProcess.on('message', function (message) {
+            promise.childProcess.on('message', function(message) {
                 if (message && message.type === 'forkSuccessful') {
                     forkSuccessfulReceived = true;
                 }
             });
 
             promise
-                .then(function () {
+                .then(function() {
                     assert.equal(forkSuccessfulReceived, true);
                     done();
                 })
@@ -508,14 +520,14 @@ describe('child-process-promise', function() {
             var forkSuccessfulReceived = false;
 
             promise
-                .progress(function (childProcess) {
-                    childProcess.on('message', function (message) {
+                .progress(function(childProcess) {
+                    childProcess.on('message', function(message) {
                         if (message && message.type === 'forkSuccessful') {
                             forkSuccessfulReceived = true;
                         }
                     });
                 })
-                .then(function () {
+                .then(function() {
                     assert.equal(forkSuccessfulReceived, true);
                     done();
                 })
