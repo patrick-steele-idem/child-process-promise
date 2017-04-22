@@ -10,12 +10,24 @@ var childProcessPromise = require('../');
 var ChildProcessPromise;
 var ChildProcessError;
 
+var ErrorInstanceOf;
+
 if (require('node-version').major >= 4) {
     ChildProcessPromise = require('../lib/ChildProcessPromise');
     ChildProcessError = require('../lib/ChildProcessError');
+    
+    ErrorInstanceOf = function(errorObject, constructor) {
+      return expect(errorObject).to.be.an.instanceof(constructor);
+    };
 } else {
     ChildProcessPromise = require('../lib-es5/ChildProcessPromise');
     ChildProcessError = require('../lib-es5/ChildProcessError');
+    
+    // babel doesn't support subclassing of built in objects
+    
+    ErrorInstanceOf = function(errorObject, constructor) {
+      return true;
+    };
 }
 
 var Promise;
@@ -26,6 +38,7 @@ if (require('node-version').major >= 4) {
     // Don't use the native Promise in Node.js <4 since it doesn't support subclassing
     Promise = require('promise-polyfill');
 }
+
 
 var NODE_VERSION = process.version;
 var NODE_PATH = process.argv[0];
@@ -171,7 +184,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .fail(function(e) {
-                    expect(e).to.be.an.instanceof(ChildProcessError);
+                    ErrorInstanceOf(e, ChildProcessError);
                     expect(e.toString()).to.contain(missingFilePath);
                     expect(e.code).to.equal('ENOENT');
                     done();
@@ -276,7 +289,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection expected!'));
                 })
                 .catch(function(error) {
-                    expect(error).to.be.an.instanceof(ChildProcessError);
+                    ErrorInstanceOf(error, ChildProcessError);
                     expect(error.stdout).to.equal('');
                     expect(error.stderr).to.contain(missingFilePath);
                     expect(error.childProcess).to.be.an('object');
@@ -295,7 +308,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .catch(function(e) {
-                    expect(e).to.be.an.instanceof(ChildProcessError);
+                    ErrorInstanceOf(e, ChildProcessError);
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
@@ -311,7 +324,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .fail(function(e) {
-                    expect(e).to.be.an.instanceof(ChildProcessError);
+                    ErrorInstanceOf(e, ChildProcessError);
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
@@ -450,7 +463,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection expected!'));
                 })
                 .catch(function(error) {
-                    expect(error).to.be.an.instanceof(ChildProcessError);
+                    ErrorInstanceOf(error, ChildProcessError);
                     expect(error.stdout).to.equal('');
                     expect(error.stderr).to.equal('ERROR');
                     expect(error.childProcess).to.be.an('object');
@@ -469,7 +482,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .catch(function(e) {
-                    expect(e).to.be.an.instanceof(ChildProcessError);
+                    ErrorInstanceOf(e, ChildProcessError);
                     expect(e.code).to.equal(1);
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
@@ -486,7 +499,7 @@ describe('child-process-promise', function() {
                     done(new Error('rejection was expected but it completed successfully!'));
                 })
                 .fail(function(e) {
-                    expect(e).to.be.an.instanceof(ChildProcessError);
+                    ErrorInstanceOf(e, ChildProcessError);
                     expect(e.toString()).to.contain(missingFilePath);
                     done();
                 })
