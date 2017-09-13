@@ -72,3 +72,21 @@ spawn('echo', ['hello'], { capture: [ 'stdout', 'stderr' ]})
         console.error('[spawn] stderr: ', err.stderr);
     });
 ```
+
+#### print
+Type: `Array`  
+Default: `[]`
+
+Pass an additional `print` option to **print automatically** the result of `stdout` and/or `stderr`
+
+```javascript
+var spawn = require('child-process-promise').spawn;
+
+spawn('echo', ['hello'], { print: [ 'stdout', 'stderr' ]})
+    .then(function (result) {
+        // then block
+    })
+    .catch(function (err) {
+        // error block
+    });
+```
