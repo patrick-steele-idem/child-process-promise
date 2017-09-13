@@ -5,6 +5,8 @@ var assert = require('chai').assert;
 
 var path = require('path');
 
+var intercept = require("intercept-stdout");
+
 var childProcessPromise = require('../');
 
 var ChildProcessPromise;
@@ -286,6 +288,87 @@ describe('child-process-promise', function() {
                 .done();
         });
 
+        it('should support the "print" (stdout only) option for spawn', function(done) {
+            var fooPath = path.join(__dirname, 'fixtures/foo.txt');
+            var promise = childProcessPromise.spawn('cat', [fooPath], { print: ['stdout'] });
+            var childProcess = promise.childProcess;
+
+            var captured_text = "";
+            var unhook_intercept = intercept(function(txt) {
+                captured_text += txt;
+            });
+
+            promise
+                .then(function(result) {
+                    unhook_intercept();
+
+                    expect(captured_text).to.equal('foo');
+                    expect(result.childProcess).to.be.an('object');
+                    expect(result.childProcess).to.equal(childProcess);
+                    done();
+                })
+                .catch(() => {
+                    unhook_intercept();
+
+                    done();
+                });
+        });
+
+        it('should support the "print" (stdout and stderr) option for spawn', function(done) {
+            var fooPath = path.join(__dirname, 'fixtures/foo.txt');
+            var promise = childProcessPromise.spawn('cat', [fooPath], { print: ['stdout', 'stderr'] });
+            var childProcess = promise.childProcess;
+
+            var captured_text = "";
+            var unhook_intercept = intercept(function(txt) {
+                captured_text += txt;
+            });
+
+            promise
+                .then(function(result) {
+                    unhook_intercept();
+
+                    expect(captured_text).to.equal('foo');
+                    expect(result.childProcess).to.be.an('object');
+                    expect(result.childProcess).to.equal(childProcess);
+                    done();
+                })
+                .catch(() => {
+                    unhook_intercept();
+
+                    done();
+                });
+        });
+
+        it('should support the "print" (stdout and stderr) option for spawn with rejection', function(done) {
+            var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
+            var promise = childProcessPromise.spawn('cat', [missingFilePath], { print: ['stdout', 'stderr'] });
+            var childProcess = promise.childProcess;
+
+            var captured_text = "";
+            var unhook_intercept = intercept(function(txt) {
+                captured_text += txt;
+                return '';
+            });
+
+            promise
+                .then(function(result) {
+                    unhook_intercept();
+
+                    done(new Error('rejection expected!'));
+                })
+                .catch(function(error) {
+                    unhook_intercept();
+
+                    expect(error).to.be.an.instanceof(ChildProcessError);
+                    expect(captured_text).to.contain(missingFilePath);
+                    expect(error.childProcess).to.be.an('object');
+                    expect(error.childProcess).to.equal(childProcess);
+                    done();
+                })
+                .done();
+        });
+
         it('should handle rejection correctly with catch', function(done) {
             var missingFilePath = path.join(__dirname, 'THIS_FILE_DOES_NOT_EXIST');
             var promise = childProcessPromise.spawn('cat', [missingFilePath]);
@@ -453,6 +536,99 @@ describe('child-process-promise', function() {
                     expect(error).to.be.an.instanceof(ChildProcessError);
                     expect(error.stdout).to.equal('');
                     expect(error.stderr).to.equal('ERROR');
+                    expect(error.childProcess).to.be.an('object');
+                    expect(error.childProcess).to.equal(childProcess);
+                    done();
+                })
+                .done();
+        });
+
+        it('should support the "print" (stdout only) option for fork', function(done) {
+            var scriptpath = path.join(__dirname, 'fixtures/fork.js');
+            var promise = childProcessPromise.fork(scriptpath, ['foo'], {
+                silent: true,
+                print: ['stdout']
+            });
+
+            var childProcess = promise.childProcess;
+
+            var captured_text = "";
+            var unhook_intercept = intercept(function(txt) {
+                captured_text += txt;
+            });
+
+            promise
+                .then(function(result) {
+                    unhook_intercept();
+
+                    expect(captured_text).to.equal('foo');
+                    expect(result.childProcess).to.be.an('object');
+                    expect(result.childProcess).to.equal(childProcess);
+                    done();
+                })
+                .catch(() => {
+                    unhook_intercept();
+
+                    done();
+                });
+        });
+
+        it('should support the "print" (stdout and stderr) option for fork', function(done) {
+            var scriptpath = path.join(__dirname, 'fixtures/fork.js');
+            var promise = childProcessPromise.fork(scriptpath, ['foo'], {
+                silent: true,
+                print: ['stdout', 'stderr']
+            });
+
+            var childProcess = promise.childProcess;
+
+            var captured_text = "";
+            var unhook_intercept = intercept(function(txt) {
+                captured_text += txt;
+            });
+
+            promise
+                .then(function(result) {
+                    unhook_intercept();
+
+                    expect(captured_text).to.equal('foo');
+                    expect(result.childProcess).to.be.an('object');
+                    expect(result.childProcess).to.equal(childProcess);
+                    done();
+                })
+                .catch(() => {
+                    unhook_intercept();
+
+                    done();
+                });
+        });
+
+        it('should support the "print" (stdout and stderr) option for fork with rejection', function(done) {
+            var scriptpath = path.join(__dirname, 'fixtures/fork.js');
+            var promise = childProcessPromise.fork(scriptpath, ['ERROR'], {
+                silent: true,
+                print: ['stdout', 'stderr']
+            });
+
+            var childProcess = promise.childProcess;
+
+            var captured_text = "";
+            var unhook_intercept = intercept(function(txt) {
+                captured_text += txt;
+                return '';
+            });
+
+            promise
+                .then(function(result) {
+                    unhook_intercept();
+
+                    done(new Error('rejection expected!'));
+                })
+                .catch(function(error) {
+                    unhook_intercept();
+
+                    expect(error).to.be.an.instanceof(ChildProcessError);
+                    expect(captured_text).to.equal('ERROR');
                     expect(error.childProcess).to.be.an('object');
                     expect(error.childProcess).to.equal(childProcess);
                     done();
