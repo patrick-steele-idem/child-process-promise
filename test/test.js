@@ -396,7 +396,7 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout only) option for spawn', function(done) {
+        it('should support the "capture" (stdout only) option for fork', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo'], {
                 silent: true,
@@ -416,7 +416,7 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout and stderr) option for spawn', function(done) {
+        it('should support the "capture" (stdout and stderr) option for fork', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['foo'], {
                 silent: true,
@@ -436,7 +436,7 @@ describe('child-process-promise', function() {
                 .catch(done);
         });
 
-        it('should support the "capture" (stdout and stderr) option for spawn with rejection', function(done) {
+        it('should support the "capture" (stdout and stderr) option for fork with rejection', function(done) {
             var scriptpath = path.join(__dirname, 'fixtures/fork.js');
             var promise = childProcessPromise.fork(scriptpath, ['ERROR'], {
                 silent: true,
