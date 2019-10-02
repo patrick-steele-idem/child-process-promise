@@ -1,7 +1,7 @@
 {
   "name": "child-process-promise",
   "description": "Simple wrapper around the \"child_process\" module that makes use of promises",
-  "main": "./index.js",
+  "main": "index.js",
   "files": [
     "lib",
     "lib-es5",
